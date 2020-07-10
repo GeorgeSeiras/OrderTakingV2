@@ -1,0 +1,5 @@
+.git
+./src/node_modules
+./dist/node_modules
+./dist/@types
+./dist/.bin
