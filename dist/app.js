@@ -1,0 +1,22 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express = require("express");
+const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+const morgan = require("morgan");
+const cors = require("cors");
+require("./models/Table");
+require("./models/Order");
+const routes = require("./routes/tables");
+const app = express();
+app.use(cors());
+app.use(morgan('dev'));
+app.use(express.static(__dirname));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use("/", require('./routes'));
+const connection = 'mongodb+srv://user:user@cluster0.wsqb7.mongodb.net/Caffe?retryWrites=true&w=majority';
+mongoose.connect(connection, { useNewUrlParser: true, useUnifiedTopology: true });
+app.listen(3000, () => {
+    console.log("Server is listening on port 3000");
+});
