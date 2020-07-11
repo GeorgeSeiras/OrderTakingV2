@@ -14,7 +14,7 @@ const mongoose = require("mongoose");
 const auth_1 = require("../auth/auth");
 const Order = mongoose.model('Order');
 const Table = mongoose.model('Table');
-const User = mongoose.model('User');
+const User_1 = require("../models/User");
 const router = express.Router();
 router
     .route('/')
@@ -35,8 +35,8 @@ router
 })
     .post(auth_1.auth.required, function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        let user = yield User.findById(req.payload.id);
-        if (!user) {
+        let user = yield User_1.User.findById(req.payload.id);
+        if (!user || user.type != 'admin') {
             return res.sendStatus(401);
         }
         try {
@@ -63,7 +63,7 @@ router
 })
     .delete(auth_1.auth.required, function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        let user = yield User.findById(req.payload.id);
+        let user = yield User_1.User.findById(req.payload.id);
         if (!user) {
             return res.sendStatus(401);
         }

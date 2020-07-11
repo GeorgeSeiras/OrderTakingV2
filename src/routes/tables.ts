@@ -4,7 +4,7 @@ import { auth } from '../auth/auth'
 import { IPayload } from '../interfaces/requestDefinitions';
 const Order = mongoose.model('Order');
 const Table = mongoose.model('Table');
-const User = mongoose.model('User');
+import {User} from '../models/User';
 const router = express.Router();
 
 router
@@ -23,7 +23,7 @@ router
     })
     .post(auth.required, async function (req: IPayload, res, next) {
         let user = await User.findById(req.payload.id);
-        if (!user) {
+        if (!user || user.type !='admin') {
             return res.sendStatus(401);
         }
         try {
@@ -49,7 +49,7 @@ router
     })
     .delete(auth.required,async function (req:IPayload, res, next) {
         let user = await User.findById(req.payload.id);
-        if (!user) {
+        if (!user|| user.type !='admin') {
             return res.sendStatus(401);
         }
         try {
