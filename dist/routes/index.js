@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const router = express.Router();
-router.use('/', require('./tables'));
-router.use('/tables', require('./orders'));
+router.use('/tables', require('./tables'));
+router.use('/tables/orders', require('./orders'));
+router.use('/', require('./user'));
 module.exports = router;

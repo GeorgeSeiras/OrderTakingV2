@@ -11,8 +11,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const mongoose = require("mongoose");
+const auth_1 = require("../auth/auth");
 const Table = mongoose.model('Table');
 const Order = mongoose.model('Order');
+const User_1 = require("../models/User");
 const router = express.Router();
 router
     .route('/:tableId')
@@ -34,8 +36,12 @@ router
         }
     });
 })
-    .post(function (req, res, next) {
+    .post(auth_1.auth.required, function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
+        let user = yield User_1.User.findById(req.payload.id);
+        if (!user) {
+            return res.sendStatus(401);
+        }
         try {
             let items = req.body.items;
             if (items.length != 0) {
@@ -57,8 +63,12 @@ router
 });
 router
     .route('/:tableId/:orderId')
-    .delete(function (req, res, next) {
+    .delete(auth_1.auth.required, function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
+        let user = yield User_1.User.findById(req.payload.id);
+        if (!user) {
+            return res.sendStatus(401);
+        }
         try {
             let table = yield Table.findOne({ tableId: req.params.tableId });
             let order = yield Order.findByIdAndUpdate({ _id: req.params.orderId }, { open: false });
@@ -68,6 +78,13 @@ router
             console.log(err);
             next();
         }
+    });
+})
+    .get(function (req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let table = yield Table.findOne({ tableId: req.params.tableId });
+        let order = yield Order.findOne({ tableId: table._id, open: true });
+        res.json({ order: order });
     });
 });
 module.exports = router;

@@ -11,8 +11,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const mongoose = require("mongoose");
+const auth_1 = require("../auth/auth");
 const Order = mongoose.model('Order');
 const Table = mongoose.model('Table');
+const User = mongoose.model('User');
 const router = express.Router();
 router
     .route('/')
@@ -31,8 +33,12 @@ router
         }
     });
 })
-    .post(function (req, res, next) {
+    .post(auth_1.auth.required, function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
+        let user = yield User.findById(req.payload.id);
+        if (!user) {
+            return res.sendStatus(401);
+        }
         try {
             let tableCount = req.body.count;
             let existingTableCount = yield Table.find({}).count();
@@ -55,8 +61,12 @@ router
         }
     });
 })
-    .delete(function (req, res, next) {
+    .delete(auth_1.auth.required, function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
+        let user = yield User.findById(req.payload.id);
+        if (!user) {
+            return res.sendStatus(401);
+        }
         try {
             let tableCount = Number(req.body.count);
             let tableIds;

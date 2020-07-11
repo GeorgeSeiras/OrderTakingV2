@@ -1,7 +1,10 @@
 import * as express from 'express';
 import * as mongoose from 'mongoose';
+import { auth } from '../auth/auth'
+import { IPayload } from '../interfaces/requestDefinitions';
 const Order = mongoose.model('Order');
 const Table = mongoose.model('Table');
+const User = mongoose.model('User');
 const router = express.Router();
 
 router
@@ -18,7 +21,11 @@ router
             next();
         }
     })
-    .post(async function (req, res, next) {
+    .post(auth.required, async function (req: IPayload, res, next) {
+        let user = await User.findById(req.payload.id);
+        if (!user) {
+            return res.sendStatus(401);
+        }
         try {
             let tableCount: number = req.body.count;
             let existingTableCount: number = await Table.find({}).count();
@@ -40,7 +47,11 @@ router
         }
 
     })
-    .delete(async function (req, res, next) {
+    .delete(auth.required,async function (req:IPayload, res, next) {
+        let user = await User.findById(req.payload.id);
+        if (!user) {
+            return res.sendStatus(401);
+        }
         try {
             let tableCount = Number(req.body.count);
             let tableIds: Array<number>;

@@ -1,8 +1,10 @@
 import * as express from 'express';
 import * as mongoose from 'mongoose';
-
+import { auth } from '../auth/auth'
+import { IPayload } from '../interfaces/requestDefinitions';
 const Table = mongoose.model('Table');
 const Order = mongoose.model('Order');
+import { User } from '../models/User';
 
 const router = express.Router();
 router
@@ -22,7 +24,11 @@ router
             next();
         }
     })
-    .post(async function (req, res, next) {
+    .post(auth.required, async function (req: IPayload, res, next) {
+        let user = await User.findById(req.payload.id);
+        if (!user) {
+            return res.sendStatus(401);
+        }
         try {
             let items: Array<string> = req.body.items;
             if (items.length != 0) {
@@ -42,7 +48,11 @@ router
     })
 router
     .route('/:tableId/:orderId')
-    .delete(async function (req, res, next) {
+    .delete(auth.required, async function (req: IPayload, res, next) {
+        let user = await User.findById(req.payload.id);
+        if (!user) {
+            return res.sendStatus(401);
+        }
         try {
             let table = await Table.findOne({ tableId: req.params.tableId });
             let order = await Order.findByIdAndUpdate({ _id: req.params.orderId }, { open: false });
@@ -51,6 +61,11 @@ router
             console.log(err);
             next();
         }
+    })
+    .get(async function(req,res,next){
+        let table = await Table.findOne({ tableId: req.params.tableId });
+        let order = await Order.findOne({tableId:table._id,open:true});
+        res.json({order:order});
     })
 
 
