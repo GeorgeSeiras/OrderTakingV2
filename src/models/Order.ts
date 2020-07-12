@@ -19,5 +19,4 @@ OrderSchema.methods.addToOrder = function(items:string[]){
     return this.save();
 };
 
-
 export const Order:IOrderModel =mongoose.model<IOrder,IOrderModel>('Order',OrderSchema);

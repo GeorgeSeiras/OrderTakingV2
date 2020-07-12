@@ -8,7 +8,7 @@ export const tableRouter = express.Router();
 
 tableRouter
     .route('/')
-    .get(async function (req, res, next) {
+    .get(async function (req, res) {
         try {
             let tables = await Table.find({});
             if (!tables) {
@@ -17,10 +17,9 @@ tableRouter
             return res.json({ tables: tables });
         } catch (err) {
             console.log(err);
-            next();
         }
     })
-    .post(auth.required, async function (req: IPayload, res, next) {
+    .post(auth.required, async function (req: IPayload, res) {
         let user = await User.findById(req.payload.id);
         if (!user || user.type !='admin') {
             return res.sendStatus(401);
@@ -42,11 +41,10 @@ tableRouter
             });
         } catch (err) {
             console.log(err);
-            next();
         }
 
     })
-    .delete(auth.required,async function (req:IPayload, res, next) {
+    .delete(auth.required,async function (req:IPayload, res) {
         let user = await User.findById(req.payload.id);
         if (!user|| user.type !='admin') {
             return res.sendStatus(401);
@@ -63,6 +61,5 @@ tableRouter
             return res.sendStatus(200);
         } catch (err) {
             console.log(err);
-            next();
         }
     })

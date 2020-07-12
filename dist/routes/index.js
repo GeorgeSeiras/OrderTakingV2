@@ -1,8 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.router = void 0;
 const express = require("express");
-const router = express.Router();
-router.use('/tables', require('./tables'));
-router.use('/tables/orders', require('./orders'));
-router.use('/', require('./user'));
-module.exports = router;
+const tables_1 = require("./tables");
+const orders_1 = require("./orders");
+const user_1 = require("./user");
+exports.router = express.Router();
+exports.router.use('/tables', tables_1.tableRouter);
+exports.router.use('/tables/orders', orders_1.orderRouter);
+exports.router.use('/', user_1.userRouter);

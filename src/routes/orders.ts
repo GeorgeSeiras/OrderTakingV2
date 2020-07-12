@@ -2,14 +2,14 @@ import * as express from 'express';
 import * as mongoose from 'mongoose';
 import { auth } from '../auth/auth'
 import { IPayload } from '../interfaces/requestDefinitions';
-import {Table} from '../models/Table';
-import {Order} from '../models/Order';
+import { Table } from '../models/Table';
+import { Order } from '../models/Order';
 import { User } from '../models/User';
 
 export const orderRouter = express.Router();
 orderRouter
     .route('/:tableId')
-    .get(async function (req, res, next) {
+    .get(async function (req, res) {
         try {
             let table = await Table.findOne({ tableId: req.params.tableId });
             let orders = await Order.find({ tableId: table._id });
@@ -21,10 +21,9 @@ orderRouter
             });
         } catch (err) {
             console.log(err);
-            next();
         }
     })
-    .post(auth.required, async function (req: IPayload, res, next) {
+    .post(auth.required, async function (req: IPayload, res) {
         let user = await User.findById(req.payload.id);
         if (!user) {
             return res.sendStatus(401);
@@ -43,27 +42,44 @@ orderRouter
             }
         } catch (err) {
             console.log(err);
-            next();
         }
     })
 orderRouter
     .route('/:tableId/:orderId')
-    .delete(auth.required, async function (req: IPayload, res, next) {
+    .delete(auth.required, async function (req: IPayload, res) {
+        let user = await User.findById(req.payload.id);
+        if (!user) {
+            return res.sendStatus(401);
+        }
+        try {
+            let order = await Order.findByIdAndUpdate({ _id: req.params.orderId }, { open: false });
+            res.json({ order: order });
+        } catch (err) {
+            console.log(err);
+        }
+    })
+    .get(auth.required,async function (req:IPayload, res) {
+        let user = await User.findById(req.payload.id);
+        if (!user) {
+            return res.sendStatus(401);
+        }
+        let table = await Table.findOne({ tableId: req.params.tableId });
+        let order = await Order.findOne({ tableId: table._id, open: true });
+        res.json({ order: order });
+    })
+    .put(auth.required, async function (req: IPayload, res) {
         let user = await User.findById(req.payload.id);
         if (!user) {
             return res.sendStatus(401);
         }
         try {
             let table = await Table.findOne({ tableId: req.params.tableId });
-            let order = await Order.findByIdAndUpdate({ _id: req.params.orderId }, { open: false });
+            let order = await Order.findOne({ tableId: table._id, open: true });
+            let newItems: Array<string> = req.body.items
+            order.items = order.items.concat(newItems);
+            order.save();
             res.json({ order: order });
         } catch (err) {
             console.log(err);
-            next();
         }
-    })
-    .get(async function (req, res, next) {
-        let table = await Table.findOne({ tableId: req.params.tableId });
-        let order = await Order.findOne({ tableId: table._id, open: true });
-        res.json({ order: order });
     })

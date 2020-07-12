@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const morgan = require("morgan");
 const cors = require("cors");
 const session = require("express-session");
+const index_1 = require("./routes/index");
 require("./models/Table");
 require("./models/Order");
 require("./models/User");
@@ -16,7 +17,7 @@ app.use(morgan('dev'));
 app.use(express.static(__dirname));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use("/", require('./routes'));
+app.use("/", index_1.router);
 app.use(session({ secret: 'conduit', cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false }));
 app.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
@@ -31,10 +32,12 @@ app.use(function (req, res, next) {
 app.use(function (err, req, res, next) {
     console.log(err.stack);
     res.status(err.status || 500);
-    res.json({ 'errors': {
+    res.json({
+        'errors': {
             message: err.message,
             error: err
-        } });
+        }
+    });
 });
 const connection = 'mongodb+srv://user:user@cluster0.wsqb7.mongodb.net/Caffe?retryWrites=true&w=majority';
 mongoose.connect(connection, { useNewUrlParser: true, useUnifiedTopology: true });

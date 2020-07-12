@@ -9,11 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.userRouter = void 0;
 const express = require("express");
 const User_1 = require("../models/User");
 const passport_1 = require("../auth/passport");
-const router = express.Router();
-router
+exports.userRouter = express.Router();
+exports.userRouter
     .route('/login')
     .post(function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -48,7 +49,7 @@ router
         }
     });
 });
-router
+exports.userRouter
     .route('/register')
     .post(function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -75,4 +76,3 @@ router
         });
     });
 });
-module.exports = router;

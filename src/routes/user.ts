@@ -39,7 +39,7 @@ userRouter
     })
 userRouter
     .route('/register')
-    .post(async function (req, res, next) {
+    .post(async function (req, res) {
         if (!req.body.name) {
             return res.status(422).json({ message: { name: "can't be blank" } });
         }
