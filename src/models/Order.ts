@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-const Table = mongoose.model('Table');
+import {IOrderDocument} from '../interfaces/IOrderDocument';
 
 const OrderSchema: mongoose.Schema = new mongoose.Schema({
     tableId: { type: mongoose.Schema.Types.ObjectId, ref: 'Table' },
@@ -7,10 +7,17 @@ const OrderSchema: mongoose.Schema = new mongoose.Schema({
     open:{type:Boolean, default:true}
 }, { timestamps: true });
 
+export interface IOrder extends IOrderDocument{
+    addToOrder(items:string[]):Promise<this>;
+}
+
+export interface IOrderModel extends mongoose.Model<IOrder>{
+}
+
 OrderSchema.methods.addToOrder = function(items:string[]){
     this.items = this.items.concat(items)
     return this.save();
 };
 
 
-mongoose.model('Order',OrderSchema);
+export const Order:IOrderModel =mongoose.model<IOrder,IOrderModel>('Order',OrderSchema);
