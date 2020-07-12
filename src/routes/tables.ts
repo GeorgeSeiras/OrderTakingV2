@@ -2,12 +2,11 @@ import * as express from 'express';
 import * as mongoose from 'mongoose';
 import { auth } from '../auth/auth'
 import { IPayload } from '../interfaces/requestDefinitions';
-const Order = mongoose.model('Order');
-const Table = mongoose.model('Table');
+import {Table} from '../models/Table';
 import {User} from '../models/User';
-const router = express.Router();
+export const tableRouter = express.Router();
 
-router
+tableRouter
     .route('/')
     .get(async function (req, res, next) {
         try {
@@ -67,5 +66,3 @@ router
             next();
         }
     })
-
-module.exports = router;

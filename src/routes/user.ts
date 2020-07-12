@@ -3,10 +3,10 @@ import { User } from '../models/User';
 import * as auth from '../auth/auth';
 import * as passport from 'passport';
 import * as mongoose from 'mongoose';
-import {pass} from '../auth/passport'
-const router = express.Router();
+import { pass } from '../auth/passport'
+export const userRouter = express.Router();
 
-router
+userRouter
     .route('/login')
     .post(async function (req, res, next) {
         try {
@@ -28,7 +28,7 @@ router
                             token: user.generateJWT()
                         }
                     });
-                }else{
+                } else {
                     return res.status(422).json(info);
                 }
             })(req, res, next)
@@ -37,7 +37,7 @@ router
             next();
         }
     })
-router
+userRouter
     .route('/register')
     .post(async function (req, res, next) {
         if (!req.body.name) {
@@ -52,9 +52,9 @@ router
         let user = new User();
 
         user.name = req.body.name;
-           user.setPassword(req.body.password);
-            user.type = req.body.type;
-            user.save();
+        user.setPassword(req.body.password);
+        user.type = req.body.type;
+        user.save();
         return res.json({
             user: {
                 name: user.name,
@@ -63,5 +63,3 @@ router
             }
         })
     })
-
-module.exports = router;

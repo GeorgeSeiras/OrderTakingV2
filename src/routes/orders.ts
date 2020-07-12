@@ -2,12 +2,12 @@ import * as express from 'express';
 import * as mongoose from 'mongoose';
 import { auth } from '../auth/auth'
 import { IPayload } from '../interfaces/requestDefinitions';
-const Table = mongoose.model('Table');
-const Order = mongoose.model('Order');
+import {Table} from '../models/Table';
+import {Order} from '../models/Order';
 import { User } from '../models/User';
 
-const router = express.Router();
-router
+export const orderRouter = express.Router();
+orderRouter
     .route('/:tableId')
     .get(async function (req, res, next) {
         try {
@@ -46,7 +46,7 @@ router
             next();
         }
     })
-router
+orderRouter
     .route('/:tableId/:orderId')
     .delete(auth.required, async function (req: IPayload, res, next) {
         let user = await User.findById(req.payload.id);
@@ -62,11 +62,8 @@ router
             next();
         }
     })
-    .get(async function(req,res,next){
+    .get(async function (req, res, next) {
         let table = await Table.findOne({ tableId: req.params.tableId });
-        let order = await Order.findOne({tableId:table._id,open:true});
-        res.json({order:order});
+        let order = await Order.findOne({ tableId: table._id, open: true });
+        res.json({ order: order });
     })
-
-
-module.exports = router;

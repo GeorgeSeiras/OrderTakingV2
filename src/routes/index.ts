@@ -1,7 +1,10 @@
 import * as express from "express";
-const router = express.Router();
+import { tableRouter } from './tables';
+import { orderRouter } from './orders';
+import { userRouter } from './user';
 
-router.use('/tables',require('./tables'));
-router.use('/tables/orders',require('./orders'));
-router.use('/',require('./user'));
-module.exports = router;
+export const router = express.Router();
+
+router.use('/tables', tableRouter);
+router.use('/tables/orders', orderRouter);
+router.use('/', userRouter);
